@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDown, ArrowUpRight, Sparkles, Star } from "lucide-react";
+import { ArrowUpRight, Sparkles, Star } from "lucide-react";
 import { salon } from "@/lib/salon";
 import { afterImage } from "./public-content";
 import OpenStatusBadge from "./open-status-badge";
@@ -19,7 +19,7 @@ export default function HeroSection({ bookingLink }: { bookingLink: string | nul
             Thoughtful artistry. A little ritual. A look that feels entirely like you. Welcome to Image Makeover.
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <Link href="/services" className="inline-flex items-center gap-2 rounded-full bg-brand-gold px-6 py-3.5 text-sm font-semibold text-brand-background transition hover:bg-brand-champagne">Explore services <ArrowDown size={16} /></Link>
+            <Link href="/services" className="inline-flex items-center gap-2 rounded-full bg-brand-gold px-6 py-3.5 text-sm font-semibold text-brand-background transition hover:bg-brand-champagne">Explore Services</Link>
             <a href={bookingLink ?? "#visit"} aria-disabled={!bookingLink} className="inline-flex items-center gap-2 rounded-full border border-brand-border px-6 py-3.5 text-sm font-semibold transition hover:border-brand-gold hover:text-brand-champagne">Book on WhatsApp <ArrowUpRight size={16} /></a>
           </div>
           {!salon.whatsappNumber && <p className="mt-3 text-xs text-brand-muted">Add your WhatsApp number in environment settings to enable direct booking.</p>}

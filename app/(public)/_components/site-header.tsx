@@ -3,10 +3,65 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 export default function SiteHeader({ bookingLink }: { bookingLink: string | null }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    let supabase: ReturnType<typeof getSupabaseBrowserClient>;
+
+    try {
+      supabase = getSupabaseBrowserClient();
+    } catch (error) {
+      console.error("Could not initialize admin navigation:", error);
+      return;
+    }
+
+    async function checkAdmin(userId: string | null) {
+      if (!userId) {
+        if (active) setIsAdmin(false);
+        return;
+      }
+
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", userId)
+        .maybeSingle();
+      if (!active) return;
+      if (error) {
+        console.error("Could not verify admin navigation role:", error.message);
+        setIsAdmin(false);
+        return;
+      }
+      setIsAdmin(profile?.role === "admin");
+    }
+
+    void supabase.auth.getUser().then(({ data, error }) => {
+      if (error && error.name !== "AuthSessionMissingError") {
+        console.error("Could not verify admin navigation session:", error.message);
+      }
+      void checkAdmin(data.user?.id ?? null);
+    }).catch((error: unknown) => {
+      if (active) setIsAdmin(false);
+      console.error("Could not verify admin navigation session:", error);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      window.setTimeout(() => {
+        void checkAdmin(session?.user.id ?? null);
+      }, 0);
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <header className="relative z-30 border-b border-white/5 bg-brand-background/90 backdrop-blur">
@@ -21,7 +76,7 @@ export default function SiteHeader({ bookingLink }: { bookingLink: string | null
           <Link className="transition hover:text-white" href="/#visit">Find us</Link>
           <Link href="/book" className="transition hover:text-white">Book online</Link>
           <Link href="/dashboard" className="transition hover:text-white">My account</Link>
-          <Link href="/admin/watermark" className="transition hover:text-white">Studio</Link>
+          {isAdmin && <Link href="/admin/watermark" className="transition hover:text-white">Studio</Link>}
         </nav>
         <a href={bookingLink ?? "/#visit"} className="hidden rounded-full bg-brand-gold px-5 py-2.5 text-sm font-semibold text-brand-background transition hover:bg-brand-champagne sm:inline-flex">
           Book a visit <ArrowUpRight className="ml-1" size={16} />
@@ -37,7 +92,7 @@ export default function SiteHeader({ bookingLink }: { bookingLink: string | null
           <Link href="/#visit" onClick={() => setMenuOpen(false)}>Find us</Link>
           <Link href="/book" onClick={() => setMenuOpen(false)}>Book online</Link>
           <Link href="/dashboard" onClick={() => setMenuOpen(false)}>My account</Link>
-          <Link href="/admin/watermark" onClick={() => setMenuOpen(false)}>Studio</Link>
+          {isAdmin && <Link href="/admin/watermark" onClick={() => setMenuOpen(false)}>Studio</Link>}
         </nav>
       )}
     </header>
