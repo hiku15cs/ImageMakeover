@@ -55,13 +55,10 @@ export default function WatermarkStudio() {
   const [isDragging, setIsDragging] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
-  const [isSigningIn, setIsSigningIn] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [user, setUser] = useState<User | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [logoReady, setLogoReady] = useState(false);
 
   useEffect(() => {
@@ -256,33 +253,6 @@ export default function WatermarkStudio() {
     }
   };
 
-  const signIn = async () => {
-    setError("");
-    setNotice("");
-    setIsSigningIn(true);
-    try {
-      const supabase = getSupabaseBrowserClient();
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-      if (signInError) throw new Error(`Sign-in failed: ${signInError.message}`);
-      setUser(data.user);
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", data.user.id)
-        .maybeSingle();
-      if (profileError) throw new Error(`Couldn't verify your staff role: ${profileError.message}`);
-      setUserRole(profile?.role ?? null);
-      setPassword("");
-      setNotice(profile?.role === "admin" || profile?.role === "staff"
-        ? "Signed in successfully."
-        : "Signed in, but this account does not have a staff role.");
-    } catch (signInError) {
-      setError(getErrorMessage(signInError));
-    } finally {
-      setIsSigningIn(false);
-    }
-  };
-
   return (
     <main className="min-h-screen bg-brand-background">
       <header className="border-b border-brand-border">
@@ -352,16 +322,7 @@ export default function WatermarkStudio() {
               <select id="category" value={category} onChange={(event) => setCategory(event.target.value as Category)} className="w-full rounded-lg border border-brand-border bg-brand-background px-3 py-3 text-sm outline-none focus:border-brand-gold">
                 {(["Hair", "Skin", "Bridal", "Nails"] as const).map((value) => <option key={value}>{value}</option>)}
               </select>
-              {!user && (
-                <form className="mt-6 border-t border-brand-border pt-5" onSubmit={(event) => { event.preventDefault(); void signIn(); }}>
-                  <p className="text-sm font-medium">Admin sign in</p>
-                  <label htmlFor="admin-email" className="mb-2 mt-4 block text-xs text-brand-muted">Email</label>
-                  <input id="admin-email" type="email" autoComplete="username" required value={email} onChange={(event) => setEmail(event.target.value)} className="w-full rounded-lg border border-brand-border bg-brand-background px-3 py-3 text-sm outline-none focus:border-brand-gold" />
-                  <label htmlFor="admin-password" className="mb-2 mt-4 block text-xs text-brand-muted">Password</label>
-                  <input id="admin-password" type="password" autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} className="w-full rounded-lg border border-brand-border bg-brand-background px-3 py-3 text-sm outline-none focus:border-brand-gold" />
-                  <button type="submit" disabled={isSigningIn} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full border border-brand-border px-4 py-2.5 text-sm transition hover:border-brand-gold disabled:opacity-50">{isSigningIn && <LoaderCircle size={15} className="animate-spin" />}Sign in</button>
-                </form>
-              )}
+              {!user && <Link href="/login?next=%2Fadmin%2Fwatermark" className="mt-6 block rounded-full border border-brand-border px-4 py-2.5 text-center text-sm transition hover:border-brand-gold">Continue with Google to publish</Link>}
             </section>
 
             <div className="space-y-3">

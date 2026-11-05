@@ -23,7 +23,7 @@ export async function middleware(request: NextRequest) {
   });
 
   const { data: { user }, error } = await supabase.auth.getUser();
-  if (error && error.code !== "AuthSessionMissingError") {
+  if (error && error.name !== "AuthSessionMissingError") {
     console.error("Supabase session refresh failed:", error.message);
   }
 

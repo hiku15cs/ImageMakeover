@@ -20,6 +20,7 @@ export default function SiteHeader({ bookingLink }: { bookingLink: string | null
           <Link className="transition hover:text-white" href="/work">Our work</Link>
           <Link className="transition hover:text-white" href="/#visit">Find us</Link>
           <Link href="/book" className="transition hover:text-white">Book online</Link>
+          <Link href="/dashboard" className="transition hover:text-white">My account</Link>
           <Link href="/admin/watermark" className="transition hover:text-white">Studio</Link>
         </nav>
         <a href={bookingLink ?? "/#visit"} className="hidden rounded-full bg-brand-gold px-5 py-2.5 text-sm font-semibold text-brand-background transition hover:bg-brand-champagne sm:inline-flex">
@@ -35,6 +36,7 @@ export default function SiteHeader({ bookingLink }: { bookingLink: string | null
           <Link href="/work" onClick={() => setMenuOpen(false)}>Our work</Link>
           <Link href="/#visit" onClick={() => setMenuOpen(false)}>Find us</Link>
           <Link href="/book" onClick={() => setMenuOpen(false)}>Book online</Link>
+          <Link href="/dashboard" onClick={() => setMenuOpen(false)}>My account</Link>
           <Link href="/admin/watermark" onClick={() => setMenuOpen(false)}>Studio</Link>
         </nav>
       )}

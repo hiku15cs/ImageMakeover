@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { ArrowLeft, CalendarDays, Check, Clock3, MessageCircle, Plus, Search, X } from "lucide-react";
+import { ArrowLeft, CalendarDays, Check, Clock3, MessageCircle, Plus, Search, Users, X } from "lucide-react";
 import {
   createWalkIn,
   getAdminAppointments,
@@ -168,7 +168,10 @@ export default function AppointmentQueue({ initialAppointments, services, signOu
             <p className="mb-3 text-xs font-semibold uppercase tracking-[.25em] text-brand-antique">Appointments · IST</p>
             <h1 className="font-display text-4xl sm:text-5xl">The <span className="gold-text italic">queue.</span></h1>
           </div>
-          <button type="button" onClick={() => setWalkInOpen(true)} className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-gold px-5 py-3 text-sm font-semibold text-brand-background transition hover:bg-brand-champagne"><Plus size={17} /> Add walk-in</button>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/admin/clients" className="inline-flex items-center justify-center gap-2 rounded-full border border-brand-border px-5 py-3 text-sm text-brand-muted transition hover:border-brand-gold hover:text-brand-champagne"><Users size={16} /> Client CRM</Link>
+            <button type="button" onClick={() => setWalkInOpen(true)} className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-gold px-5 py-3 text-sm font-semibold text-brand-background transition hover:bg-brand-champagne"><Plus size={17} /> Add walk-in</button>
+          </div>
         </div>
 
         {error && <p role="alert" className="mt-5 rounded-lg border border-red-400/30 bg-red-400/5 px-4 py-3 text-sm text-red-200">{error}</p>}
