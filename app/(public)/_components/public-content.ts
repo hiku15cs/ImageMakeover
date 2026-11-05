@@ -28,7 +28,7 @@ export const initialServices: Service[] = [
 export const beforeImage =
   "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1400&q=85";
 export const afterImage =
-  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1400&q=85";
+  "/image-makeover.webp";
 
 export const testimonials = [
   {
