@@ -113,7 +113,9 @@ export async function createCustomerAppointment(
 
   const supabase = await createSupabaseServerClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError) throw new Error(`Could not verify session: ${authError.message}`);
+  if (authError && authError.name !== "AuthSessionMissingError") {
+    throw new Error(`Could not verify session: ${authError.message}`);
+  }
 
   if (user) {
     const { error: profileError } = await supabase

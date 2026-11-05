@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import SlotPicker from "@/components/booking/SlotPicker";
 
 export const metadata: Metadata = { title: "Book an appointment | Image Makeover" };
@@ -7,6 +9,13 @@ export default function BookingPage() {
   return (
     <main className="min-h-screen bg-brand-background px-5 py-12">
       <div className="mx-auto max-w-3xl">
+        <nav aria-label="Booking navigation" className="mb-9 flex flex-wrap items-center justify-between gap-4 border-b border-brand-border pb-5">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm text-brand-muted transition hover:text-brand-champagne"><ArrowLeft size={16} /> Image Makeover</Link>
+          <div className="flex items-center gap-5 text-sm text-brand-muted">
+            <Link href="/services" className="transition hover:text-brand-champagne">Services</Link>
+            <Link href="/login?next=%2Fdashboard" className="transition hover:text-brand-champagne">My account</Link>
+          </div>
+        </nav>
         <p className="text-xs font-semibold uppercase tracking-[.25em] text-brand-antique">Image Makeover · Reservations</p>
         <h1 className="mt-4 font-display text-4xl sm:text-5xl">Make a little time <span className="gold-text italic">for you.</span></h1>
         <p className="mt-3 text-sm leading-6 text-brand-muted">Choose a service and time. Bookings are available up to 30 days ahead, and you can book with or without an account.</p>
