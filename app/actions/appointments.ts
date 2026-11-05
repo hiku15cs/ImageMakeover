@@ -196,7 +196,7 @@ export async function createWalkIn(input: {
   name: string;
   phone: string;
   serviceId: string;
-}): Promise<{ id: string }> {
+}): Promise<{ id: string } | { error: string }> {
   const name = input.name.trim();
   const phone = input.phone.replace(/\D/g, "");
   if (!name || name.length > 120) throw new Error("Enter a customer name (up to 120 characters).");
@@ -209,9 +209,9 @@ export async function createWalkIn(input: {
     p_guest_phone: phone,
     p_service_id: input.serviceId,
   });
-  if (error) throw new Error(error.message);
+  if (error) return { error: `Could not add walk-in: ${error.message}` };
   if (!data || typeof data !== "object" || !("id" in data) || typeof data.id !== "string") {
-    throw new Error("Walk-in was created, but its confirmation could not be read.");
+    return { error: "Walk-in was created, but its confirmation could not be read. Refresh the queue before retrying." };
   }
   return { id: data.id };
 }

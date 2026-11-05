@@ -70,6 +70,28 @@ function customerPhone(appointment: QueueAppointment) {
   return appointment.guest_phone || appointment.profiles?.phone || "";
 }
 
+function getWalkInAvailability(durationMinutes: number, now = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Kolkata",
+    weekday: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(now);
+  const value = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? "";
+  const currentMinutes = Number(value("hour")) * 60 + Number(value("minute"));
+  const closingMinutes = 20 * 60 + 30;
+
+  if (value("weekday") === "Tuesday" || currentMinutes < 10 * 60 || currentMinutes >= closingMinutes) {
+    return "Walk-ins are available Wednesday–Monday, 10:00 AM–8:30 PM IST.";
+  }
+  if (currentMinutes + durationMinutes > closingMinutes) {
+    return "This service cannot be completed before the salon closes at 8:30 PM IST.";
+  }
+  return "";
+}
+
 function whatsappLink(appointment: QueueAppointment) {
   const phone = customerPhone(appointment).replace(/\D/g, "");
   if (!phone) return null;
@@ -145,6 +167,7 @@ export default function AppointmentQueue({ initialAppointments, services, signOu
     setError("");
     setNotice("");
     const result = await createWalkIn(input);
+    if ("error" in result) throw new Error(result.error);
     await refreshAppointments();
     setWalkInOpen(false);
     setNotice(`Walk-in added to the queue (${result.id.slice(0, 8).toUpperCase()}).`);
@@ -272,6 +295,10 @@ function WalkInModal({
   const [serviceId, setServiceId] = useState(services[0]?.id ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const selectedService = services.find((service) => service.id === serviceId);
+  const availabilityMessage = selectedService
+    ? getWalkInAvailability(selectedService.duration_minutes)
+    : "Add an active service before creating a walk-in.";
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -295,8 +322,8 @@ function WalkInModal({
           <div><label htmlFor="walkin-name" className="mb-2 block text-sm">Customer name</label><input id="walkin-name" required maxLength={120} value={name} onChange={(event) => setName(event.target.value)} className="w-full rounded-lg border border-brand-border bg-brand-background px-3 py-3 text-sm outline-none focus:border-brand-gold" /></div>
           <div><label htmlFor="walkin-phone" className="mb-2 block text-sm">Phone number</label><input id="walkin-phone" type="tel" required value={phone} onChange={(event) => setPhone(event.target.value)} className="w-full rounded-lg border border-brand-border bg-brand-background px-3 py-3 text-sm outline-none focus:border-brand-gold" /></div>
           <div><label htmlFor="walkin-service" className="mb-2 block text-sm">Service</label><select id="walkin-service" required value={serviceId} onChange={(event) => setServiceId(event.target.value)} className="w-full rounded-lg border border-brand-border bg-brand-background px-3 py-3 text-sm outline-none focus:border-brand-gold">{services.map((service) => <option key={service.id} value={service.id}>{service.title} · {service.duration_minutes} min</option>)}</select></div>
-          <p className="text-xs text-brand-muted">The appointment is added straight to the In-chair queue. Available capacity is checked by the database.</p>
-          <button type="submit" disabled={busy || !services.length} className="w-full rounded-full bg-brand-gold px-4 py-3 text-sm font-semibold text-brand-background disabled:opacity-50">{busy ? "Adding walk-in…" : <><Check className="mr-2 inline" size={16} /> Add to queue</>}</button>
+          {availabilityMessage ? <p role="status" className="rounded-lg border border-amber-400/30 bg-amber-400/5 px-3 py-2 text-xs text-amber-200">{availabilityMessage}</p> : <p className="text-xs text-brand-muted">The appointment is added straight to the In-chair queue. Available capacity is checked by the database.</p>}
+          <button type="submit" disabled={busy || !services.length || Boolean(availabilityMessage)} className="w-full rounded-full bg-brand-gold px-4 py-3 text-sm font-semibold text-brand-background disabled:opacity-50">{busy ? "Adding walk-in…" : <><Check className="mr-2 inline" size={16} /> Add to queue</>}</button>
         </form>
       </section>
     </div>
