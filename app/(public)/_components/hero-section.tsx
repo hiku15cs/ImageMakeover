@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowDown, ArrowUpRight, Sparkles, Star } from "lucide-react";
 import { salon } from "@/lib/salon";
 import { afterImage } from "./public-content";
@@ -7,7 +8,7 @@ import OpenStatusBadge from "./open-status-badge";
 export default function HeroSection({ bookingLink }: { bookingLink: string | null }) {
   return (
     <section className="hero-glow relative">
-      <div className="mx-auto grid min-h-[720px] max-w-7xl items-center gap-14 px-5 py-20 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:py-24">
+      <div className="mx-auto grid min-h-[720px] max-w-7xl items-center gap-14 px-5 py-8 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:py-10">
         <div className="relative z-10">
           <div className="mb-8"><OpenStatusBadge /></div>
           <p className="mb-5 text-xs font-semibold uppercase tracking-[0.28em] text-brand-antique">The art of becoming</p>
@@ -18,7 +19,7 @@ export default function HeroSection({ bookingLink }: { bookingLink: string | nul
             Thoughtful artistry. A little ritual. A look that feels entirely like you. Welcome to Image Makeover.
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <a href="#services" className="inline-flex items-center gap-2 rounded-full bg-brand-gold px-6 py-3.5 text-sm font-semibold text-brand-background transition hover:bg-brand-champagne">Explore services <ArrowDown size={16} /></a>
+            <Link href="/services" className="inline-flex items-center gap-2 rounded-full bg-brand-gold px-6 py-3.5 text-sm font-semibold text-brand-background transition hover:bg-brand-champagne">Explore services <ArrowDown size={16} /></Link>
             <a href={bookingLink ?? "#visit"} aria-disabled={!bookingLink} className="inline-flex items-center gap-2 rounded-full border border-brand-border px-6 py-3.5 text-sm font-semibold transition hover:border-brand-gold hover:text-brand-champagne">Book on WhatsApp <ArrowUpRight size={16} /></a>
           </div>
           {!salon.whatsappNumber && <p className="mt-3 text-xs text-brand-muted">Add your WhatsApp number in environment settings to enable direct booking.</p>}

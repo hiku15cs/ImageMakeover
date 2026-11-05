@@ -10,7 +10,7 @@ export default function SiteFooter({ bookingLink }: { bookingLink: string | null
         </div>
       </footer>
       <a
-        href={bookingLink ?? "#visit"}
+        href={bookingLink ?? "/#visit"}
         target={bookingLink ? "_blank" : undefined}
         rel={bookingLink ? "noreferrer" : undefined}
         aria-label={bookingLink ? "Book on WhatsApp" : "Find booking contact details"}
